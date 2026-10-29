@@ -4,6 +4,7 @@ import { Garment } from '../components/Garment'
 import { ArrowIcon, SearchIcon } from '../components/Icons'
 import ProductCard from '../components/ProductCard'
 import { link } from '../router'
+import { publicUrl } from '../utils'
 
 export default function CategoryPage({ id }) {
   const category = id === 'todo' ? allCategory : categoryById[id]
@@ -39,7 +40,7 @@ export default function CategoryPage({ id }) {
         <p className="cat-hero__ghost" aria-hidden="true">{category.name}</p>
         <div className="cat-hero__art" aria-hidden="true">
           {category.cover
-            ? <img src={category.cover} alt="" />
+            ? <img className="cat-hero__photo" src={publicUrl(category.cover)} alt="" />
             : category.type === 'mark'
               ? <span className="mark" />
               : <Garment type={category.type} hex={colors.blanco.hex} />}
@@ -50,7 +51,7 @@ export default function CategoryPage({ id }) {
           </nav>
           <h1 id="cat-title">{category.name}</h1>
           <p className="cat-hero__blurb">{category.blurb}</p>
-          <p className="cat-hero__count">{total} {total === 1 ? 'prenda' : 'prendas'}</p>
+          <p className="cat-hero__count">{category.soon && total === 0 ? 'Muy pronto' : `${total} ${total === 1 ? 'producto' : 'productos'}`}</p>
         </div>
       </section>
 
@@ -85,7 +86,13 @@ export default function CategoryPage({ id }) {
         <div className="grid">
           {items.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
         </div>
-        {items.length === 0 && (
+        {items.length === 0 && total === 0 && (
+          <div className="empty">
+            <p>Estamos preparando esta categoría. Escríbenos y te avisamos cuando lleguen.</p>
+            <a className="btn btn--dark" href={link.category('todo')}>Ver el resto del catálogo</a>
+          </div>
+        )}
+        {items.length === 0 && total > 0 && (
           <div className="empty">
             <p>No encontramos prendas con esa búsqueda.</p>
             <button className="btn btn--dark" type="button" onClick={() => setQuery('')}>Limpiar búsqueda</button>

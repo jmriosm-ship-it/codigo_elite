@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { allCategory, categories, colors, products } from '../data'
 import { link } from '../router'
-import { Garment } from './Garment'
+import { Garment, Picture } from './Garment'
 import { useFavorites } from '../store'
 import { ArrowIcon, BagIcon, ChevronIcon, HeartIcon, MenuIcon, SearchIcon } from './Icons'
 import SearchPanel from './SearchPanel'
@@ -9,17 +9,37 @@ import SearchPanel from './SearchPanel'
 const entries = [allCategory, ...categories]
 const countOf = (id) => (id === 'todo' ? products.length : products.filter((p) => p.category === id).length)
 
-// Vista previa de la categoría sobre la que se pasa el mouse
+const hasPhoto = (p) => !!(p.image || p.imagesByColor)
+
+// Productos para el mosaico: primero los que tienen foto. En "Todo", uno de cada categoría.
+function previewItems(id) {
+  if (id === 'todo') {
+    const picks = categories.map((c) => products.find((p) => p.category === c.id && hasPhoto(p))).filter(Boolean)
+    return picks.slice(0, 3)
+  }
+  const list = products.filter((p) => p.category === id)
+  return [...list.filter(hasPhoto), ...list.filter((p) => !hasPhoto(p))].slice(0, 3)
+}
+
+// Vista previa de la categoría sobre la que se pasa el mouse: mosaico con sus productos
 function Preview({ category }) {
   const count = countOf(category.id)
+  const items = previewItems(category.id)
   return (
-    <a className="mega__preview" href={link.category(category.id)}>
-      <span className="mega__art" aria-hidden="true">
-        {category.type === 'mark' ? <span className="mark" /> : <Garment type={category.type} hex={colors.blanco.hex} />}
-      </span>
+    <a className={`mega__preview mega__preview--${items.length}`} href={link.category(category.id)}>
+      {items.map((p) => (
+        <span key={p.id} className={`mega__cell${hasPhoto(p) ? '' : ' mega__cell--draw'}`} aria-hidden="true">
+          <Picture product={p} />
+        </span>
+      ))}
+      {items.length === 0 && (
+        <span className="mega__cell mega__cell--draw" aria-hidden="true">
+          {category.type === 'mark' ? <span className="mark" /> : <Garment type={category.type} hex={colors.negro.hex} />}
+        </span>
+      )}
       <span className="mega__caption">
         <strong>{category.name}</strong>
-        <span>{count} {count === 1 ? 'prenda' : 'prendas'} <ArrowIcon /></span>
+        <span>Ver {count === 1 ? 'el producto' : `los ${count}`} <ArrowIcon /></span>
       </span>
     </a>
   )

@@ -1,9 +1,12 @@
 import { useRef } from 'react'
 import { ArrowLeftIcon, ArrowRightIcon } from './Icons'
 import ProductCard from './ProductCard'
+import TagCard from './TagCard'
 
 // Carrusel horizontal de prendas (con scroll táctil, flechas y teclado)
-export default function Rail({ id, title, items, moreHref, moreLabel = 'Ver todo', tone = 'light' }) {
+// variant = 'tag' muestra los productos como etiquetas colgantes de prenda
+export default function Rail({ id, title, items, moreHref, moreLabel = 'Ver todo', tone = 'light', variant = 'card' }) {
+  const Card = variant === 'tag' ? TagCard : ProductCard
   const track = useRef(null)
   const scroll = (dir) => track.current.scrollBy({ left: dir * track.current.clientWidth * 0.8, behavior: 'smooth' })
 
@@ -18,7 +21,7 @@ export default function Rail({ id, title, items, moreHref, moreLabel = 'Ver todo
         </div>
       </div>
       <div className="rail__track" ref={track}>
-        {items.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
+        {items.map((p, i) => <Card key={p.id} product={p} index={i} />)}
       </div>
     </section>
   )

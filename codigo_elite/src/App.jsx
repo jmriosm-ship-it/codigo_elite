@@ -59,7 +59,7 @@ export default function App() {
           <>
             <Hero />
             <Categories />
-            <Rail id="nuevo" title="Lo nuevo" items={newest} moreHref={link.category('todo')} moreLabel="Ver todo el catálogo" />
+            <Rail id="nuevo" title="Lo nuevo" tone="tags" variant="tag" items={newest} moreHref={link.category('todo')} moreLabel="Ver todo el catálogo" />
             <Statement />
             <Steps />
             <Contact onWrite={() => sendMessage('Hola Código Élite, quiero más información.', toast.notify)} />

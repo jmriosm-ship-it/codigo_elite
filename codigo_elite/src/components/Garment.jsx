@@ -1,4 +1,5 @@
 import { categoryById, colors } from '../data'
+import { publicUrl } from '../utils'
 
 // Siluetas (frente y espalda) que se dibujan mientras una prenda no tenga foto propia
 const shapes = {
@@ -70,6 +71,31 @@ const shapes = {
   },
 }
 
+// Accesorios: bolso/canguro, perfume y reloj
+Object.assign(shapes, {
+  bag: {
+    front: {
+      body: 'M44 104 Q44 88 60 88 L180 88 Q196 88 196 104 L196 184 Q196 200 180 200 L60 200 Q44 200 44 184 Z',
+      extra: 'M62 92 Q62 34 120 34 Q178 34 178 92 L166 92 Q166 46 120 46 Q74 46 74 92 Z',
+      lines: ['M44 124 L196 124', 'M108 124 L108 140 L132 140 L132 124', 'M60 184 L180 184'],
+    },
+  },
+  perfume: {
+    front: {
+      body: 'M70 96 Q70 84 82 84 L158 84 Q170 84 170 96 L170 206 Q170 218 158 218 L82 218 Q70 218 70 206 Z',
+      extra: 'M98 44 L142 44 L142 70 L150 70 L150 84 L90 84 L90 70 L98 70 Z',
+      lines: ['M88 140 L152 140', 'M88 170 L152 170', 'M98 70 L142 70'],
+    },
+  },
+  watch: {
+    front: {
+      body: 'M96 20 L144 20 L150 72 L150 168 L144 220 L96 220 L90 168 L90 72 Z',
+      extra: 'M120 62 a58 58 0 1 0 0.1 0 Z',
+      lines: ['M120 82 a38 38 0 1 0 0.1 0', 'M120 92 L120 120 L140 132', 'M178 112 L188 112 L188 128 L178 128'],
+    },
+  },
+})
+
 function isLight(hex) {
   const n = parseInt(hex.slice(1), 16)
   return 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255) > 150
@@ -96,8 +122,8 @@ export function Picture({ product, color, view = 'front' }) {
   const byColor = product.imagesByColor?.[color || product.colors[0]]
   if (product.image || byColor) {
     const src = view === 'back' && product.imageBack ? product.imageBack : byColor || product.image
-    return <img src={src} alt={product.name} loading="lazy" />
+    return <img src={publicUrl(src)} alt={product.name} loading="lazy" />
   }
-  const type = categoryById[product.category]?.type
+  const type = product.type || categoryById[product.category]?.type
   return <Garment type={type} hex={colors[color || product.colors[0]].hex} view={view} />
 }
